@@ -1,7 +1,4 @@
 # MAV-1.0
-
-An ubgraded mobile robot simulation environment focused on autonomous navigation, state estimation under uncertainty, and reactive safety control.
-
 ---
 
 ## Project Upgrades (MAV-1.0 vs MAV 0.0)
