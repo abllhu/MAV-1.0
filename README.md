@@ -36,13 +36,6 @@ This version starts the integration of the Nav2 stack, focusing on map hosting, 
 
 * **Lifecycle Manager Integration:** To handle system initialization and state transitions, the `lifecycle_manager` tool was integrated. This component is responsible for configuring, transitioning, and activating the ROS 2 lifecycle nodes in the correct sequential order, ensuring a reliable boot sequenc for the navigation system.
 
-## Environment & Prerequisites
-
-* **Operating System:** Ubuntu 22.04 LTS
-* **Middleware:** ROS 2 (Humble)
-* **Architecture Support:** ARM64 / AMD64 (Optimized for PC and Raspberry Pi deployment)
-* **Containerization:** Docker
-
 ---
 ### 4. Probabilistic Occupancy Grid Mapping (Mapping with Known Poses)
 To build an accurate environment map from noisy sensor data, a custom 2D probabilistic occupancy grid mapping algorithm was implemented from scratch using Python and NumPy. 
@@ -75,6 +68,37 @@ To maintain high computational performance, the algorithm applies an independenc
 * **Gray cells:** Unexplored space (Unknown limits).
 
 ![Probabilistic Occupancy Grid](gifs/map_with_known_posses.gif)
+---
+
+### 5. Robot Localization via AMCL (Adaptive Monte Carlo Localization)
+For tracking the robot’s state within a known static map under uncertainty, the Nav2 **AMCL** package was integrated:
+* **Particle Filter Localization:** AMCL uses a multi-hypothesis particle filter to track the robot's pose. Each particle represents a possible pose, and the cloud converges as the robot moves and observes features via LiDAR.
+* **KLD-Sampling Efficiency:** The algorithm dynamically adjusts the number of particles (Kullback-Leibler Divergence sampling). When the robot's pose is highly uncertain, the particle count increases; once localized, the particle cloud shrinks to conserve CPU resources.
+* **Transform Integration:** AMCL dynamically publishes the critical `map` to `odom` coordinate frame transform, correcting the low-frequency drift accumulated by the wheel odometry hardware.
+
+---
+
+### 6. Simultaneous Localization and Mapping (SLAM) via Slam Toolbox
+While multiple SLAM paradigms exist (such as Particle Filter SLAM like Gmapping, EKF SLAM, or legacy Graph SLAM options), this project utilizes **Slam Toolbox**—the industry standard for modern ROS 2 navigation.
+
+* **Pose-Graph SLAM Architecture:** Unlike legacy particle filter methods that suffer from computational scaling issues in large environments, Slam Toolbox utilizes a sparse pose-graph optimization technique to manage constraints.
+* **Loop Closure & Optimization:** The module actively detects when the robot revisits known areas (Loop Closure), triggering a global optimization routine to correct map deformations and historical localization drift in real time.
+* **Lifelong Mapping Capabilities:** It supports continuous, long-term mapping routines, allowing the robot to load an existing map, execute further exploration, refine the geometry, and save the updated environment state seamlessly.
+
+#### 🎬 Full SLAM & Navigation Demo
+Check out the complete demonstration of the autonomous mapping and navigation system in action:
+
+
+
+---
+
+## Environment & Prerequisites
+
+* **Operating System:** Ubuntu 22.04 LTS
+* **Middleware:** ROS 2 (Humble)
+* **Architecture Support:** ARM64 / AMD64 (Optimized for PC and Raspberry Pi deployment)
+* **Containerization:** Docker
+
 ---
 
 ## Getting Started
