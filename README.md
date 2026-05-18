@@ -25,7 +25,7 @@ $$\delta_{trans} = \sqrt{(\bar{x} - \bar{x}')^2 + (\bar{y} - \bar{y}')^2}$$
 
 $$\delta_{rot2} = \bar{\theta}' - \bar{\theta} - \delta_{rot1}$$
 
-*(Where $\bar{x}$ represents the internal odometry reading and $x$ represents the true world coordinates).*
+*(Where x-bar represents the internal odometry reading and x represents the true world coordinates).*
 
 2. **Sample True Parameters with Noise:**
 
@@ -57,11 +57,4 @@ To prevent hardware and simulation collisions, a safety system has been integrat
 
 ---
 
-## Environment & Prerequisites
 
-* **Operating System:** Ubuntu 22.04 LTS
-* **Middleware:** ROS 2 (Humble)
-* **Architecture Support:** ARM64 / AMD64 (Optimized for PC and Raspberry Pi deployment)
-* **Containerization:** Docker
-
----
