@@ -1,14 +1,10 @@
-
-
-https://github.com/user-attachments/assets/909e7d6c-37fb-40bc-865b-43da651a09d7
-
 # MAV-1.0
 
-An advanced mobile robot simulation environment focused on autonomous navigation, state estimation under uncertainty, and reactive safety control.
+An ubgraded mobile robot simulation environment focused on autonomous navigation, state estimation under uncertainty, and reactive safety control.
 
 ---
 
-## Project Upgrades (MAV-1.0 vs Previous Version)
+## Project Upgrades (MAV-1.0 vs MAV 0.0)
 
 This version introduces major upgrades to improve robot localization, state estimation accuracy, and collision avoidance:
 
@@ -89,9 +85,9 @@ While multiple SLAM paradigms exist (such as Particle Filter SLAM like Gmapping,
 * **Loop Closure & Optimization:** The module actively detects when the robot revisits known areas (Loop Closure), triggering a global optimization routine to correct map deformations and historical localization drift in real time.
 * **Lifelong Mapping Capabilities:** It supports continuous, long-term mapping routines, allowing the robot to load an existing map, execute further exploration, refine the geometry, and save the updated environment state seamlessly.
 
-#### 🎬 Full SLAM & Navigation Demo
+####  Full SLAM & Navigation Demo
 Check out the complete demonstration of the autonomous mapping and navigation system in action:
-
+https://github.com/user-attachments/assets/909e7d6c-37fb-40bc-865b-43da651a09d7
 
 
 ---
