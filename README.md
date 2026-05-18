@@ -27,6 +27,15 @@ To prevent hardware and simulation collisions, a safety system has been integrat
 
 ---
 
+### 3. Navigation Stack (Nav2) Implementation & Configuration
+This version starts the integration of the Nav2 stack, focusing on map hosting, Quality of Service (QoS) tuning, and node lifecycle management:
+
+* **Map Server & QoS Compatibility:** The `map_server` tool was configured to host the occupancy grid map for other applications. Initially, RViz2 failed to display the map hosted by the map server. The issue was a QoS durability policy mismatch. Standard configuration only delivers transient messages, whereas map visualization requires historical data persistence. To resolve this, the RViz2 QoS Durability policy was changed to **Transient Local** to match the Nav2 map server settings, enabling proper map data visualization.
+
+![QoS Durability Policy Compatibility](photos/compatibility of durability qos policy.png)
+
+* **Lifecycle Manager Integration:** To handle system initialization and state transitions, the `lifecycle_manager` tool was integrated. This component is responsible for configuring, transitioning, and activating the ROS 2 lifecycle nodes in the correct sequential order, ensuring a reliable boot sequenc for the navigation system.
+
 ## Environment & Prerequisites
 
 * **Operating System:** Ubuntu 22.04 LTS
