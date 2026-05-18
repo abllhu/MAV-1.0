@@ -5,7 +5,8 @@ from launch.actions import DeclareLaunchArgument , OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
 def noisy_controller(context, *args, **kwargs):
-    
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
     wheel_radius_error = LaunchConfiguration("wheel_radius_error").perform(context)
     wheel_separation_error = LaunchConfiguration("wheel_separation_error").perform(context)
     wheel_radius = LaunchConfiguration("wheel_radius").perform(context)
@@ -16,7 +17,8 @@ def noisy_controller(context, *args, **kwargs):
         executable="noisy_controller.py",
         parameters=[{
             "wheel_radius_error": wheel_radius_error + wheel_radius,
-            "wheel_separation_error": wheel_separation_error + wheel_separation
+            "wheel_separation_error": wheel_separation_error + wheel_separation,
+            "use_sim_time": use_sim_time
         }]
     )
 
@@ -47,8 +49,15 @@ def generate_launch_description():
         description="Separation error between the wheels"
     )
 
+    use_sim_time_arg = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description="Use simulation time"
+    )
+
     wheel_radius = LaunchConfiguration("wheel_radius")
     wheel_separation = LaunchConfiguration("wheel_separation")
+    use_sim_time = LaunchConfiguration("use_sim_time")
 
 
     joint_state_broadcaster_spawner = Node(
@@ -75,7 +84,8 @@ def generate_launch_description():
         executable="controller.py",
         parameters=[{
             "wheel_radius": wheel_radius,
-            "wheel_separation": wheel_separation
+            "wheel_separation": wheel_separation,
+            "use_sim_time": use_sim_time
         }]
     )
 
@@ -83,6 +93,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            use_sim_time_arg,
             wr_arg,
             ws_arg,
             wr_arg_error,

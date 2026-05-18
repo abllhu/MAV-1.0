@@ -1,9 +1,10 @@
 from pathlib import Path
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable, TimerAction
-from launch.substitutions import Command, LaunchConfiguration
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.substitutions import Command, LaunchConfiguration , PathJoinSubstitution, PythonExpression
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
+from os import pathsep
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -20,9 +21,32 @@ def generate_launch_description():
         description="Absolute path to mav urdf file"
     )
 
+    world_arg = DeclareLaunchArgument(name="world_name", 
+        default_value="empty", 
+        description="Gazebo world to load"
+        )
+
+    world_path = PathJoinSubstitution([
+            mav_description,
+            "worlds",
+            PythonExpression(expression=["'", LaunchConfiguration("world_name"), "'", " + '.world'"])
+        ]
+    )
+
+    use_sim_time_arg = DeclareLaunchArgument(
+        name="use_sim_time",
+        default_value="true",
+        description="Use simulation (Gazebo) clock if true"
+    )
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
+    # Gazebo needs the model path to find the included meshes in the urdf file
+    model_path = [str(Path(mav_description).parent.resolve())]
+    model_path += [pathsep + os.path.join(get_package_share_directory("mav_description"), "models")]
+
     gazebo_env_var = SetEnvironmentVariable(
-        name="GZ_SIM_RESOURCE_PATH",
-        value=[str(Path(mav_description).parent.resolve())]
+        "GZ_SIM_RESOURCE_PATH", model_path
     )
 
     robot_description = ParameterValue(
@@ -42,7 +66,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         parameters=[{
             "robot_description": robot_description,
-            "use_sim_time": True
+            "use_sim_time": use_sim_time
         }]
     )
 
@@ -51,8 +75,8 @@ def generate_launch_description():
             os.path.join(get_package_share_directory("ros_gz_sim"), "launch", "gz_sim.launch.py")
         ),
         launch_arguments={
-            "gz_args": "-v 4 -r empty.sdf"
-        }.items()
+                    "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
+                }.items()
     )
 
     gz_spawn_mav =  Node(
@@ -67,7 +91,8 @@ def generate_launch_description():
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU"
+            "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
+            "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
         ],
         remappings=[
             ('/imu', '/imu_output'),
@@ -75,10 +100,12 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        use_sim_time_arg,
         model_arg,
+        world_arg,
         gazebo_env_var,
-        robot_state_publisher_node,
         gazebo,
-        gz_spawn_mav,
         gz_ros2_bridge,
+        robot_state_publisher_node,
+        gz_spawn_mav,
     ])

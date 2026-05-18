@@ -11,12 +11,15 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 
 install(PROGRAMS
   ${PROJECT_NAME}/kalmanfilter.py
   ${PROJECT_NAME}/imu_repub.py
+  ${PROJECT_NAME}/odom_motion_model.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
