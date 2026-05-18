@@ -44,6 +44,38 @@ This version starts the integration of the Nav2 stack, focusing on map hosting, 
 * **Containerization:** Docker
 
 ---
+### 4. Probabilistic Occupancy Grid Mapping (Mapping with Known Poses)
+To build an accurate environment map from noisy sensor data, a custom 2D probabilistic occupancy grid mapping algorithm was implemented from scratch using Python and NumPy. 
+
+#### Core Mapping Concept
+Instead of a simple binary map (0 or 1), the environment is discretized into a 2D grid where each cell maintains a continuous probability belief of being **Occupied**, **Free**, or **Unknown**. 
+* **Ray Casting via Bresenham's Algorithm:** For every laser beam from the `LaserScan` message, Bresenham's line algorithm traces the cells from the robot's current pose to the obstacle hit point.
+* **Inverse Sensor Model Application:** All grid cells traversed along the beam's path are updated as **Free**, while the final cell where the beam detects a hit is marked as **Occupied**. Unobserved areas remain **Unknown**.
+
+![Bresenham Ray Casting Demo](gifs/b.gif)
+
+#### Why Probabilistic Mapping & Bayesian Update?
+Real-world LiDAR data and robot localization are inherently uncertain (sensor noise, missing reflections, slips). To mitigate this, a **Log-Odds Bayesian Filter** recursively updates the map's confidence over time. 
+
+The update equation is implemented as:
+`L_t(x) = L_{t-1}(x) + Log_Odds(p(x | z_t)) - L_0`
+
+Where:
+* `L_t(x)` is the updated log-odds belief of the cell.
+* `L_{t-1}(x)` is the previous belief historical state.
+* `Log_Odds(p(x | z_t))` is the inverse sensor model measurement input.
+* `L_0` is the prior belief anchor.
+
+Using the log-odds representation avoids numerical underflow/overflow stability issues and simplifies calculation by converting complex probability multiplications into rapid, real-time additions.
+
+#### Visualization in RViz2
+To maintain high computational performance, the algorithm applies an independence approximation across cells. The resulting occupancy grid is streamed directly to RViz2:
+* **Black cells:** High probability of occupation (Obstacles).
+* **White cells:** Cleared space (Free zones).
+* **Gray cells:** Unexplored space (Unknown limits).
+
+![Probabilistic Occupancy Grid](gifs/map_with_known_posses.gif)
+---
 
 ## Getting Started
 
