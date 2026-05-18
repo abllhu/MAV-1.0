@@ -87,6 +87,12 @@ While multiple SLAM paradigms exist (such as Particle Filter SLAM like Gmapping,
 
 ####  Full SLAM & Navigation Demo
 Check out the complete demonstration of the autonomous mapping and navigation system in action:
+
+
+
+
+
+
 https://github.com/user-attachments/assets/909e7d6c-37fb-40bc-865b-43da651a09d7
 
 
@@ -100,12 +106,3 @@ https://github.com/user-attachments/assets/909e7d6c-37fb-40bc-865b-43da651a09d7
 * **Containerization:** Docker
 
 ---
-
-## Getting Started
-
-### 1. Build the Workspace
-Clone the repository into your ROS 2 workspace, then build and source the packages:
-```bash
-cd ~/ros2_ws
-colcon build --symlink-install
-source install/setup.bash
